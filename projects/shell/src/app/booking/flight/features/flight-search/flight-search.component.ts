@@ -8,6 +8,7 @@ import { FlightFilterComponent } from '../../ui/flight-filter/flight-filter.comp
 import { Store } from '@ngrx/store';
 import { ticketFeature } from '../../logic/+state/tickets.reducer';
 import { ticketActions } from '../../logic/+state/tickets.actions';
+import { take } from 'rxjs';
 
 
 @Component({
@@ -44,5 +45,24 @@ export class FlightSearchComponent {
       ),
       error: errResp => console.error('Error loading flights', errResp)
     });
+  }
+
+  delay(): void {
+    this.flights$.pipe(take(1)).subscribe(flights => {
+      const oldFlight = flights[0];
+      const oldDate = new Date(oldFlight.date);
+
+      const newDate = new Date(oldDate.getTime() + 1000 * 60 * 5); // Add 5 min
+      const newFlight = {
+        ...oldFlight,
+        date: newDate.toISOString(),
+      };
+
+      this.store.dispatch(ticketActions.flightUpdate({ flight: newFlight }));
+    });
+  }
+
+  clear(): void {
+    this.store.dispatch(ticketActions.flightsClear());
   }
 }

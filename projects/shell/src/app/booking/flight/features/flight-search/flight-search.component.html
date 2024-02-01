@@ -1,45 +1,57 @@
-<div class="card">
-  <div class="card-header">
-    <h2 class="card-title">Flight Search</h2>
-  </div>
+@if (flights$ | async; as flights) {
 
-  <div class="card-body">
-    <form>
-      <div class="form-group">
-        <label>From:</label>
-        <input [(ngModel)]="from" name="from" class="form-control" />
-      </div>
-      <div class="form-group">
-        <label>To:</label>
-        <input [(ngModel)]="to" name="to" class="form-control" />
-      </div>
-
-      <div class="form-group">
-        <button (click)="search()" class="btn btn-default">
-          search
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div class="row">
-  @for (flight of flights$ | async; track flight.id) {
-    <div class="col-xs-12 col-sm-6 col-md-4">
-      <app-flight-card
-        [item]="flight"
-        [(selected)]="basket[flight.id]"
-      />
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Flight Search</h2>
     </div>
-  }
-</div>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="card-title">Basket</h2>
+    <div class="card-body">
+      <form>
+        <div class="form-group">
+          <label>From:</label>
+          <input [(ngModel)]="from" name="from" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>To:</label>
+          <input [(ngModel)]="to" name="to" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <button (click)="search()" class="btn btn-default">search</button>
+          @if (flights.length) {
+            <button
+              (click)="delay()"
+              class="btn btn-default"
+            >
+              Delay
+            </button>
+            <button
+              (click)="clear()"
+              class="btn btn-default"
+            >
+              Clear
+            </button>
+          }
+        </div>
+      </form>
+    </div>
   </div>
 
-  <div class="card-body">
-    <pre>{{ basket | json }}</pre>
+  <div class="row">
+    @for (flight of flights; track flight.id) {
+      <div class="col-xs-12 col-sm-6 col-md-4">
+        <app-flight-card [item]="flight" [(selected)]="basket[flight.id]" />
+      </div>
+    }
   </div>
-</div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Basket</h2>
+    </div>
+
+    <div class="card-body">
+      <pre>{{ basket | json }}</pre>
+    </div>
+  </div>
+}
