@@ -22,7 +22,7 @@ import { Flight } from './../../logic/model/flight';
 
       <div class="card-body">
         <p>Flight-No.: #{{ item?.id }}</p>
-        <p>Flight-No.: #{{ item?.date | date : "dd.MM.yyyy HH:mm" }}</p>
+        <p>Date: {{ item?.date | date : "dd.MM.yyyy HH:mm" }}</p>
         <p>
           <button
             (click)="toggleSelection()"
