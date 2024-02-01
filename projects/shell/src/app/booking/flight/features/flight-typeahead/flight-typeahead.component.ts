@@ -1,7 +1,8 @@
 import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Observable, Subject, UnaryFunction, catchError, debounceTime, distinctUntilChanged, filter, of, pipe, switchMap, takeUntil, tap } from 'rxjs';
+import { Observable, Subject, UnaryFunction, catchError, debounceTime, distinctUntilChanged, filter, of, pipe, switchMap, takeUntil, tap, timer } from 'rxjs';
 import { FlightService } from '../../logic/data-access/flight.service';
 import { Flight } from '../../logic/model/flight';
 
@@ -14,8 +15,9 @@ import { Flight } from '../../logic/model/flight';
   templateUrl: './flight-typeahead.component.html',
   styleUrl: './flight-typeahead.component.scss'
 })
-export class FlightTypeaheadComponent implements OnDestroy {
+export class FlightTypeaheadComponent implements OnInit, OnDestroy {
   private flightService = inject(FlightService);
+  private destroyRef = inject(DestroyRef);
 
   private destroy$ = new Subject<void>();
   protected control = new FormControl('', { nonNullable: true });
@@ -24,6 +26,15 @@ export class FlightTypeaheadComponent implements OnDestroy {
 
   constructor() {
     // setTimeout(() => this.destroy$.next(), 3_000);
+    this.destroyRef.onDestroy(
+      () => console.log('Typeahead DESTROYED')
+    );
+  }
+
+  ngOnInit(): void {
+    timer(0, 1_000).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(console.log);
   }
 
   private initFlightsStream(): Observable<Flight[]> {
@@ -69,7 +80,8 @@ export class FlightTypeaheadComponent implements OnDestroy {
       tap(() => this.loading = false),
       // Tranformation
       // map(flights => any new state)
-      takeUntil(this.destroy$)
+      // takeUntil(this.destroy$)
+      takeUntilDestroyed()
     );
 
     /**
@@ -88,5 +100,6 @@ export class FlightTypeaheadComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next();
+    // this.destroy$.complete();
   }
 }
