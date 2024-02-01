@@ -5,6 +5,9 @@ import { FlightService } from '../../logic/data-access/flight.service';
 import { Flight } from '../../logic/model/flight';
 import { FlightCardComponent } from '../../ui/flight-card/flight-card.component';
 import { FlightFilterComponent } from '../../ui/flight-filter/flight-filter.component';
+import { Store } from '@ngrx/store';
+import { ticketFeature } from '../../logic/+state/tickets.reducer';
+import { ticketActions } from '../../logic/+state/tickets.actions';
 
 
 @Component({
@@ -19,11 +22,12 @@ import { FlightFilterComponent } from '../../ui/flight-filter/flight-filter.comp
   templateUrl: './flight-search.component.html',
 })
 export class FlightSearchComponent {
+  private store = inject(Store);
   private flightService = inject(FlightService);
 
   protected from = 'Hamburg';
   protected to = 'Graz';
-  protected flights: Flight[] = this.flightService.flights;
+  protected flights$ = this.store.select(ticketFeature.selectFlights);
   protected basket: Record<number, boolean> = {
     3: true,
     5: true,
@@ -35,7 +39,9 @@ export class FlightSearchComponent {
     }
 
     this.flightService.find(this.from, this.to).subscribe({
-      next: flights => this.flights = flights,
+      next: flights => this.store.dispatch(
+        ticketActions.flightsLoaded({ flights })
+      ),
       error: errResp => console.error('Error loading flights', errResp)
     });
   }
