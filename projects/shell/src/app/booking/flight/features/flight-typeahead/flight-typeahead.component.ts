@@ -1,7 +1,7 @@
 import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Observable, debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs';
+import { Observable, Subject, catchError, debounceTime, distinctUntilChanged, filter, of, switchMap, takeUntil, tap } from 'rxjs';
 import { FlightService } from '../../logic/data-access/flight.service';
 import { Flight } from '../../logic/model/flight';
 
@@ -14,12 +14,17 @@ import { Flight } from '../../logic/model/flight';
   templateUrl: './flight-typeahead.component.html',
   styleUrl: './flight-typeahead.component.scss'
 })
-export class FlightTypeaheadComponent {
+export class FlightTypeaheadComponent implements OnDestroy {
   private flightService = inject(FlightService);
 
+  private destroy$ = new Subject<void>();
   protected control = new FormControl('', { nonNullable: true });
   protected flights$ = this.initFlightsStream();
   protected loading = false;
+
+  constructor() {
+    // setTimeout(() => this.destroy$.next(), 3_000);
+  }
 
   private initFlightsStream(): Observable<Flight[]> {
     /**
@@ -39,11 +44,14 @@ export class FlightTypeaheadComponent {
        * Stream 2: HTTP Backend API Call
        *  - State Provider: Array of Flights
        */
-      switchMap(city => this.load(city)),
+      switchMap(city => this.load(city).pipe(
+        catchError(() => of([]))
+      )),
       // Side-effect: Callstate
-      tap(() => this.loading = false)
+      tap(() => this.loading = false),
       // Tranformation
       // map(flights => any new state)
+      takeUntil(this.destroy$)
     );
 
     /**
@@ -58,5 +66,9 @@ export class FlightTypeaheadComponent {
 
   private load(city: string): Observable<Flight[]> {
     return this.flightService.find(city, '');
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
   }
 }
