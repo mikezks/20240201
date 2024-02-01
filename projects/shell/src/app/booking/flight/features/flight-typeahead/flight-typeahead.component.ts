@@ -1,7 +1,7 @@
 import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component, OnDestroy, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Observable, Subject, catchError, debounceTime, distinctUntilChanged, filter, of, switchMap, takeUntil, tap } from 'rxjs';
+import { Observable, Subject, UnaryFunction, catchError, debounceTime, distinctUntilChanged, filter, of, pipe, switchMap, takeUntil, tap } from 'rxjs';
 import { FlightService } from '../../logic/data-access/flight.service';
 import { Flight } from '../../logic/model/flight';
 
@@ -27,6 +27,18 @@ export class FlightTypeaheadComponent implements OnDestroy {
   }
 
   private initFlightsStream(): Observable<Flight[]> {
+    const customFilter = <T>(
+      filterFn: (value: T) => boolean,
+      debounceTimeValue: number
+    ): UnaryFunction<
+      Observable<T>,
+      Observable<T>
+    > => pipe(
+      filter(filterFn),
+      debounceTime(debounceTimeValue),
+      distinctUntilChanged(),
+    );
+
     /**
      * Stream 1: Input Form Changes
      *  - Trigger
@@ -34,9 +46,10 @@ export class FlightTypeaheadComponent implements OnDestroy {
      */
     return this.control.valueChanges.pipe(
       // Filtering START
-      filter(city => city.length > 2),
-      debounceTime(300),
-      distinctUntilChanged(),
+      customFilter(
+        city => city.length > 2,
+        300
+      ),
       // Filtering END
       // Side-effect: Callstate
       tap(() => this.loading = true),
@@ -44,9 +57,14 @@ export class FlightTypeaheadComponent implements OnDestroy {
        * Stream 2: HTTP Backend API Call
        *  - State Provider: Array of Flights
        */
-      switchMap(city => this.load(city).pipe(
-        catchError(() => of([]))
-      )),
+      switchMap(city => {
+        if (city.length > 2) {
+          return this.load(city).pipe(
+            catchError(() => of([]))
+          );
+        }
+        return of([]);
+      }),
       // Side-effect: Callstate
       tap(() => this.loading = false),
       // Tranformation
