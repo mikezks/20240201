@@ -7,6 +7,7 @@ import { ticketActions } from '../../logic/+state/tickets.actions';
 import { ticketFeature } from '../../logic/+state/tickets.reducer';
 import { FlightCardComponent } from '../../ui/flight-card/flight-card.component';
 import { FlightFilterComponent } from '../../ui/flight-filter/flight-filter.component';
+import { injectTicketFeature } from '../../logic/+state/tickets.facade';
 
 
 @Component({
@@ -22,6 +23,7 @@ import { FlightFilterComponent } from '../../ui/flight-filter/flight-filter.comp
 })
 export class FlightSearchComponent {
   private store = inject(Store);
+  protected ticketFeature = injectTicketFeature();
 
   protected from = 'Hamburg';
   protected to = 'Graz';
@@ -36,9 +38,7 @@ export class FlightSearchComponent {
       return;
     }
 
-    this.store.dispatch(
-      ticketActions.flightsLoad({ from: this.from, to: this.to })
-    );
+    this.ticketFeature.search(this.from, this.to);
   }
 
   delay(): void {
