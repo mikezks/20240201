@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, SimpleChanges, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
@@ -17,10 +17,6 @@ import { initialFlight } from '../../logic/model/flight';
   templateUrl: './flight-edit.component.html'
 })
 export class FlightEditComponent {
-  private store = inject(Store);
-  protected id$ = this.store.select(routerFeature.selectRouteParams).pipe(
-    map(params => params['id'] || 0)
-  );
   @Input() flight = initialFlight;
 
   protected editForm = inject(NonNullableFormBuilder).group({
@@ -31,10 +27,10 @@ export class FlightEditComponent {
     delayed: [false]
   });
 
-  constructor() {
-    this.store.select(ticketFeature.selectCurrentFlight).subscribe(
-      flight => this.editForm.patchValue(flight)
-    );
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['flight'].previousValue !== changes['flight'].currentValue) {
+      this.editForm.patchValue(this.flight);
+    }
   }
 
   protected save(): void {
