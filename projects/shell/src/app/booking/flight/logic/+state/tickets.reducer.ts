@@ -33,7 +33,7 @@ export const ticketFeature = createFeature({
       )
     })),
 
-    on(ticketActions.flightsClear, (state, action) => ({
+    on(ticketActions.flightsClear, (state) => ({
       ...state,
       flights: []
     })),
