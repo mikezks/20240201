@@ -1,15 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FlightService } from '../../logic/data-access/flight.service';
-import { Flight } from '../../logic/model/flight';
+import { Store } from '@ngrx/store';
+import { take } from 'rxjs';
+import { ticketActions } from '../../logic/+state/tickets.actions';
+import { selectFilteredFlights } from '../../logic/+state/tickets.selectors';
 import { FlightCardComponent } from '../../ui/flight-card/flight-card.component';
 import { FlightFilterComponent } from '../../ui/flight-filter/flight-filter.component';
-import { Store } from '@ngrx/store';
 import { ticketFeature } from '../../logic/+state/tickets.reducer';
-import { ticketActions } from '../../logic/+state/tickets.actions';
-import { take } from 'rxjs';
-import { selectFilteredFlights } from '../../logic/+state/tickets.selectors';
 
 
 @Component({
@@ -25,11 +23,10 @@ import { selectFilteredFlights } from '../../logic/+state/tickets.selectors';
 })
 export class FlightSearchComponent {
   private store = inject(Store);
-  private flightService = inject(FlightService);
 
   protected from = 'Hamburg';
   protected to = 'Graz';
-  protected flights$ = this.store.select(selectFilteredFlights);
+  protected flights$ = this.store.select(ticketFeature.selectFlights);
   protected basket: Record<number, boolean> = {
     3: true,
     5: true,
@@ -40,12 +37,9 @@ export class FlightSearchComponent {
       return;
     }
 
-    this.flightService.find(this.from, this.to).subscribe({
-      next: flights => this.store.dispatch(
-        ticketActions.flightsLoaded({ flights })
-      ),
-      error: errResp => console.error('Error loading flights', errResp)
-    });
+    this.store.dispatch(
+      ticketActions.flightsLoad({ from: this.from, to: this.to })
+    );
   }
 
   delay(): void {

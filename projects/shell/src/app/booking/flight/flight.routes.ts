@@ -7,6 +7,7 @@ import { FlightTypeaheadComponent } from "./features/flight-typeahead/flight-typ
 import { provideState } from "@ngrx/store";
 import { ticketFeature } from "./logic/+state/tickets.reducer";
 import { provideEffects } from "@ngrx/effects";
+import { TicketsEffects } from "./logic/+state/tickets.effects";
 
 
 export const FLIGHT_ROUTES: Routes = [
@@ -15,7 +16,7 @@ export const FLIGHT_ROUTES: Routes = [
     component: FlightBookingComponent,
     providers: [
       provideState(ticketFeature),
-      provideEffects()
+      provideEffects(TicketsEffects)
     ],
     children: [
       {
