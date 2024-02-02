@@ -9,6 +9,7 @@ import { FlightCardComponent } from '../../ui/flight-card/flight-card.component'
 import { FlightFilterComponent } from '../../ui/flight-filter/flight-filter.component';
 import { injectTicketFeature } from '../../logic/+state/tickets.facade';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { FlightFilter } from '../../logic/model/flight-filter';
 
 
 @Component({
@@ -26,35 +27,25 @@ export class FlightSearchComponent {
   private store = inject(Store);
   protected ticketFeature = injectTicketFeature();
 
-  protected from = signal('Hamburg');
-  protected to = signal('Graz');
+  protected filter: FlightFilter = {
+    from: 'Hamburg',
+    to: 'Graz',
+    urgent: false
+  };
   protected flights = this.store.selectSignal(ticketFeature.selectFlights);
   protected basket: Record<number, boolean> = {
     3: true,
     5: true,
   };
-  protected lazyFrom$ = toObservable(this.from).pipe(
-    debounceTime(300)
-  );
-  protected lazyFrom = toSignal(this.lazyFrom$, {
-    initialValue: this.from()
-  });
-  protected flightRoute = computed(
-    () => 'From ' + this.lazyFrom() + ' to ' + this.to() + '.'
-  );
 
-  constructor() {
-    effect(
-      () => console.log(this.flightRoute())
-    );
-  }
+  protected search(filter: FlightFilter): void {
+    this.filter = filter;
 
-  protected search(): void {
-    if (!this.from() || !this.to()) {
+    if (!this.filter.from || !this.filter.to) {
       return;
     }
 
-    this.ticketFeature.search(this.from(), this.to());
+    this.ticketFeature.search(this.filter.from, this.filter.to);
   }
 
   delay(): void {
