@@ -1,3 +1,4 @@
+import { filter } from 'rxjs';
 import { createFeature, createReducer, createSelector, on } from "@ngrx/store";
 import { Flight, initialFlight } from "../model/flight";
 import { ticketActions } from "./tickets.actions";
@@ -28,6 +29,16 @@ export const ticketFeature = createFeature({
     on(ticketActions.flightsLoaded, (state, action) => ({
       ...state,
       flights: action.flights
+    })),
+
+    on(ticketActions.flightLoaded, (state, action) => ({
+      ...state,
+      flights: [
+        ...state.flights.filter(
+          flight => flight.id !== action.flight.id
+        ),
+        action.flight
+      ]
     })),
 
     on(ticketActions.flightUpdate, (state, action) => ({

@@ -1,13 +1,26 @@
 import { inject } from "@angular/core";
 import { ActivatedRouteSnapshot } from "@angular/router";
 import { Store } from "@ngrx/store";
-import { Observable } from "rxjs";
+import { Observable, filter } from "rxjs";
 import { ticketFeature } from "../+state/tickets.reducer";
-import { Flight } from "../../logic/model/flight";
+import { Flight, initialFlight } from "../../logic/model/flight";
+import { ticketActions } from "../+state/tickets.actions";
 
 
 export const resolveFlights = (route: ActivatedRouteSnapshot): Observable<Flight> => {
-  return inject(Store).select(ticketFeature.selectCurrentFlight);
+  const store = inject(Store);
+  return store.select(ticketFeature.selectCurrentFlight).pipe(
+    filter(flight => {
+      if (flight === initialFlight) {
+        store.dispatch(
+          ticketActions.flightLoadById({ id: +route.params['id'] })
+        );
+
+        return false;
+      }
+      return true;
+    })
+  );
 };
 
 export const flightsResolverConfig = {

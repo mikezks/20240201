@@ -18,4 +18,12 @@ export class TicketsEffects {
       map(flights => ticketActions.flightsLoaded({ flights}))
     )
   );
+
+  loadFlightById = createEffect(
+    () => this.actions$.pipe(
+      ofType(ticketActions.flightLoadById),
+      switchMap(action => this.flightService.findById(action.id)),
+      map(flight => ticketActions.flightLoaded({ flight }))
+    )
+  );
 }
