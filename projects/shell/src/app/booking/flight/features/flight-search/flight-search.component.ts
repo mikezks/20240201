@@ -9,6 +9,7 @@ import { Store } from '@ngrx/store';
 import { ticketFeature } from '../../logic/+state/tickets.reducer';
 import { ticketActions } from '../../logic/+state/tickets.actions';
 import { take } from 'rxjs';
+import { selectFilteredFlights } from '../../logic/+state/tickets.selectors';
 
 
 @Component({
@@ -28,7 +29,7 @@ export class FlightSearchComponent {
 
   protected from = 'Hamburg';
   protected to = 'Graz';
-  protected flights$ = this.store.select(ticketFeature.selectFlights);
+  protected flights$ = this.store.select(selectFilteredFlights);
   protected basket: Record<number, boolean> = {
     3: true,
     5: true,

@@ -7,12 +7,14 @@ export interface TicketState {
   flights: Flight[];
   basket: unknown;
   tickets: unknown;
+  hide: number[];
 }
 
 export const initialTicketState: TicketState = {
   flights: [],
   basket: {},
-  tickets: {}
+  tickets: {},
+  hide: [3, 5]
 };
 
 
@@ -38,4 +40,6 @@ export const ticketFeature = createFeature({
       flights: []
     })),
   )
-})
+});
+
+ticketFeature
