@@ -1,11 +1,7 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, Input, SimpleChanges, effect, inject, input } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Store } from '@ngrx/store';
-import { map } from 'rxjs';
-import { routerFeature } from '../../../../shared/+state/router.feature';
-import { ticketFeature } from '../../logic/+state/tickets.reducer';
-import { Flight, initialFlight } from '../../logic/model/flight';
+import { Flight } from '../../logic/model/flight';
 
 
 @Component({
