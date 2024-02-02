@@ -1,6 +1,8 @@
 import { createFeature, createReducer, createSelector, on } from "@ngrx/store";
-import { Flight } from "../model/flight";
+import { Flight, initialFlight } from "../model/flight";
 import { ticketActions } from "./tickets.actions";
+import { routerFeature } from "../../../../shared/+state/router.feature";
+import { constants } from "os";
 
 
 export interface TicketState {
@@ -49,6 +51,24 @@ export const ticketFeature = createFeature({
       (flights, hide) => flights.filter(
         flight => !hide.includes(flight.id)
       )
+    ),
+    selectCurrentFlight: createSelector(
+      selectFlights,
+      routerFeature.selectRouteParams,
+      (flights, params) => {
+        console.log(flights, params);
+        const id = +params['id'];
+        let resultFlight = initialFlight;
+
+        if (id) {
+          const flight = flights.find(f => f.id === id);
+          if (flight) {
+            resultFlight = flight;
+          }
+        }
+
+        return resultFlight;
+      }
     )
   })
 });
