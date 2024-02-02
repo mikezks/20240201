@@ -4,10 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { take } from 'rxjs';
 import { ticketActions } from '../../logic/+state/tickets.actions';
-import { selectFilteredFlights } from '../../logic/+state/tickets.selectors';
+import { ticketFeature } from '../../logic/+state/tickets.reducer';
 import { FlightCardComponent } from '../../ui/flight-card/flight-card.component';
 import { FlightFilterComponent } from '../../ui/flight-filter/flight-filter.component';
-import { ticketFeature } from '../../logic/+state/tickets.reducer';
 
 
 @Component({
@@ -26,7 +25,7 @@ export class FlightSearchComponent {
 
   protected from = 'Hamburg';
   protected to = 'Graz';
-  protected flights$ = this.store.select(ticketFeature.selectFlights);
+  protected flights$ = this.store.select(ticketFeature.selectFilteredFlights);
   protected basket: Record<number, boolean> = {
     3: true,
     5: true,

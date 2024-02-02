@@ -1,4 +1,4 @@
-import { createFeature, createReducer, on } from "@ngrx/store";
+import { createFeature, createReducer, createSelector, on } from "@ngrx/store";
 import { Flight } from "../model/flight";
 import { ticketActions } from "./tickets.actions";
 
@@ -39,7 +39,16 @@ export const ticketFeature = createFeature({
       ...state,
       flights: []
     })),
-  )
+  ),
+  extraSelectors: ({ selectFlights, selectHide }) => ({
+    selectFilteredFlights: createSelector(
+      // Selectors
+      selectFlights,
+      selectHide,
+      // Projector
+      (flights, hide) => flights.filter(
+        flight => !hide.includes(flight.id)
+      )
+    )
+  })
 });
-
-ticketFeature
