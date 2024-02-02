@@ -5,9 +5,9 @@ import { FlightBookingComponent } from "./features/flight-booking/flight-booking
 import { flightsResolverConfig } from "./logic/data-access/flight.resolver";
 import { FlightTypeaheadComponent } from "./features/flight-typeahead/flight-typeahead.component";
 import { provideState } from "@ngrx/store";
-import { ticketFeature } from "./logic/+state/tickets.reducer";
+import { ticketFeature } from "./logic/+state/ngrx-store/tickets.reducer";
 import { provideEffects } from "@ngrx/effects";
-import { TicketsEffects } from "./logic/+state/tickets.effects";
+import { TicketsEffects } from "./logic/+state/ngrx-store/tickets.effects";
 
 
 export const FLIGHT_ROUTES: Routes = [

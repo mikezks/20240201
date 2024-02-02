@@ -1,5 +1,6 @@
 import { Flight } from "../model/flight";
 
+
 export interface TicketState {
   flights: Flight[];
   basket: unknown;

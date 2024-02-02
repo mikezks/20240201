@@ -1,12 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { patchState, signalState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { Store } from '@ngrx/store';
 import { pipe, tap } from 'rxjs';
 import { injectTicketFeature } from '../../logic/+state/tickets.facade';
-import { ticketActions } from '../../logic/+state/tickets.actions';
 import { Flight } from '../../logic/model/flight';
 import { FlightFilter } from '../../logic/model/flight-filter';
 import { FlightCardComponent } from '../../ui/flight-card/flight-card.component';

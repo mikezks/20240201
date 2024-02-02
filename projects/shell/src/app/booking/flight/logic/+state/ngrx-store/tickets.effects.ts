@@ -1,9 +1,9 @@
 import { Injectable, inject } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
-import { FlightService } from "../data-access/flight.service";
-import { ticketActions } from "./tickets.actions";
-import { map, switchMap, withLatestFrom } from "rxjs";
 import { Store } from "@ngrx/store";
+import { map, switchMap } from "rxjs";
+import { FlightService } from "../../data-access/flight.service";
+import { ticketActions } from "../tickets.actions";
 
 @Injectable({
   providedIn: 'root'

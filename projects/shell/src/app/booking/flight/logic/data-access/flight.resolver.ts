@@ -2,7 +2,7 @@ import { inject } from "@angular/core";
 import { ActivatedRouteSnapshot } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { Observable, filter } from "rxjs";
-import { ticketFeature } from "../+state/tickets.reducer";
+import { ticketFeature } from "../+state/ngrx-store/tickets.reducer";
 import { Flight, initialFlight } from "../../logic/model/flight";
 import { ticketActions } from "../+state/tickets.actions";
 

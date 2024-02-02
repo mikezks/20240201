@@ -1,20 +1,18 @@
-import { inject } from "@angular/core"
-import { Store } from "@ngrx/store"
-import { ticketActions } from "./tickets.actions";
-import { ticketFeature } from "./tickets.reducer";
+import { inject } from "@angular/core";
 import { Flight } from "../model/flight";
+import { TicketStore } from "./ngrx-signals/tickets.signal.store";
 
 export function injectTicketFeature() {
-  const store = inject(Store);
+  const store = inject(TicketStore);
 
   return {
-    flights: store.selectSignal(ticketFeature.selectFlights),
-    filteredFlights: store.selectSignal(ticketFeature.selectFilteredFlights),
-    search: (from: string, to: string) =>
-      store.dispatch(ticketActions.flightsLoad({ from, to })),
+    flights: store.flightEntities,
+    filteredFlights: store.filteredFlights,
+    search: (from: string, to: string, urgent = false) =>
+      store.loadFlights({ from, to, urgent }),
     update: (flight: Flight) =>
-      store.dispatch(ticketActions.flightUpdate({ flight })),
+      store.updateFlight(flight),
     clear: () =>
-      store.dispatch(ticketActions.flightsClear()),
+      store.clearFlights,
   };
 }

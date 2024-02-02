@@ -1,8 +1,8 @@
 import { createFeature, createReducer, createSelector, on } from "@ngrx/store";
-import { routerFeature } from "../../../../shared/+state/router.feature";
-import { initialFlight } from "../model/flight";
-import { ticketActions } from "./tickets.actions";
-import { initialTicketState } from './tickets.model';
+import { routerFeature } from "../../../../../shared/+state/router.feature";
+import { initialFlight } from "../../model/flight";
+import { ticketActions } from "../tickets.actions";
+import { initialTicketState } from '../tickets.model';
 
 
 export const ticketFeature = createFeature({
