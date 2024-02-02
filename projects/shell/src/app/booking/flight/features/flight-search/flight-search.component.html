@@ -1,4 +1,4 @@
-@if (ticketFeature.flights$ | async; as flights) {
+@if (ticketFeature.flights(); as flights) {
 
   <div class="card">
     <div class="card-header">
@@ -9,12 +9,14 @@
       <form>
         <div class="form-group">
           <label>From:</label>
-          <input [(ngModel)]="from" name="from" class="form-control" />
+          <input [ngModel]="from()" (ngModelChange)="from.set($event)" name="from" class="form-control" />
         </div>
         <div class="form-group">
           <label>To:</label>
-          <input [(ngModel)]="to" name="to" class="form-control" />
+          <input [ngModel]="to()" (ngModelChange)="to.set($event)" name="to" class="form-control" />
         </div>
+
+        <p>{{ flightRoute() }}</p>
 
         <div class="form-group">
           <button (click)="search()" class="btn btn-default">search</button>

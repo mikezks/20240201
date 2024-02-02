@@ -1,5 +1,5 @@
 import { DatePipe, NgStyle } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Flight } from './../../logic/model/flight';
 
@@ -17,12 +17,12 @@ import { Flight } from './../../logic/model/flight';
       [ngStyle]="{ 'background-color': selected ? 'rgb(204, 197, 185)' : 'white' }"
     >
       <div class="card-header">
-        <h2 class="card-title">{{ item?.from }} - {{ item?.to }}</h2>
+        <h2 class="card-title">{{ item().from }} - {{ item().to }}</h2>
       </div>
 
       <div class="card-body">
-        <p>Flight-No.: #{{ item?.id }}</p>
-        <p>Date: {{ item?.date | date : "dd.MM.yyyy HH:mm" }}</p>
+        <p>Flight-No.: #{{ item().id }}</p>
+        <p>Date: {{ item().date | date : "dd.MM.yyyy HH:mm" }}</p>
         <p>
           <button
             (click)="toggleSelection()"
@@ -31,7 +31,7 @@ import { Flight } from './../../logic/model/flight';
             {{ selected ? "Remove" : "Select" }}
           </button>
           <a
-            [routerLink]="['../edit', item?.id]"
+            [routerLink]="['../edit', item().id]"
             class="btn btn-success btn-sm"
             style="min-width: 85px; margin-right: 5px"
           >
@@ -43,7 +43,7 @@ import { Flight } from './../../logic/model/flight';
   `
 })
 export class FlightCardComponent {
-  @Input() item?: Flight;
+  item = input.required<Flight>();
   @Input() selected = false;
   @Output() selectedChange = new EventEmitter<boolean>();
 

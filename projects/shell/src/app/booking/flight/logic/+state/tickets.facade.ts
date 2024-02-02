@@ -7,7 +7,7 @@ export function injectTicketFeature() {
   const store = inject(Store);
 
   return {
-    flights$: store.select(ticketFeature.selectFlights),
+    flights: store.selectSignal(ticketFeature.selectFlights),
     search: (from: string, to: string) =>
       store.dispatch(ticketActions.flightsLoad({ from, to}))
   };

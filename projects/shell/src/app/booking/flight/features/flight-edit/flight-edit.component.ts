@@ -1,11 +1,11 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, Input, SimpleChanges, inject } from '@angular/core';
+import { Component, Input, SimpleChanges, effect, inject, input } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 import { routerFeature } from '../../../../shared/+state/router.feature';
 import { ticketFeature } from '../../logic/+state/tickets.reducer';
-import { initialFlight } from '../../logic/model/flight';
+import { Flight, initialFlight } from '../../logic/model/flight';
 
 
 @Component({
@@ -17,7 +17,7 @@ import { initialFlight } from '../../logic/model/flight';
   templateUrl: './flight-edit.component.html'
 })
 export class FlightEditComponent {
-  @Input() flight = initialFlight;
+  flight = input.required<Flight>();
 
   protected editForm = inject(NonNullableFormBuilder).group({
     id: [0],
@@ -27,10 +27,11 @@ export class FlightEditComponent {
     delayed: [false]
   });
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['flight'].previousValue !== changes['flight'].currentValue) {
-      this.editForm.patchValue(this.flight);
-    }
+  constructor() {
+    effect(() => {
+      this.editForm.patchValue(this.flight());
+      console.log(this.flight());
+    });
   }
 
   protected save(): void {
