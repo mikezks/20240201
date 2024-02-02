@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { debounceTime, take } from 'rxjs';
+import { debounceTime, pipe, take, tap } from 'rxjs';
 import { ticketActions } from '../../logic/+state/tickets.actions';
 import { ticketFeature } from '../../logic/+state/tickets.reducer';
 import { FlightCardComponent } from '../../ui/flight-card/flight-card.component';
@@ -10,6 +10,9 @@ import { FlightFilterComponent } from '../../ui/flight-filter/flight-filter.comp
 import { injectTicketFeature } from '../../logic/+state/tickets.facade';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FlightFilter } from '../../logic/model/flight-filter';
+import { patchState, signalState } from '@ngrx/signals';
+import { Flight } from '../../logic/model/flight';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
 
 @Component({
@@ -27,29 +30,47 @@ export class FlightSearchComponent {
   private store = inject(Store);
   protected ticketFeature = injectTicketFeature();
 
-  protected filter: FlightFilter = {
-    from: 'Hamburg',
-    to: 'Graz',
-    urgent: false
-  };
-  protected flights = this.store.selectSignal(ticketFeature.selectFlights);
-  protected basket: Record<number, boolean> = {
-    3: true,
-    5: true,
-  };
+  protected localState = signalState({
+    filter: {
+      from: 'Hamburg',
+      to: 'Graz',
+      urgent: false
+    },
+    basket: {
+      3: true,
+      5: true
+    } as Record<number, boolean>,
+    flights: [] as Flight[]
+  });
+
+  constructor() {
+    this.connectInitialLogic();
+  }
+
+  private connectInitialLogic(): void {
+    // Conntect local and global State Management
+    rxMethod<Flight[]>(pipe(
+      tap(flights => patchState(this.localState, { flights }))
+    ))(
+      this.store.select(this.ticketFeature.flights)
+    );
+  }
 
   protected search(filter: FlightFilter): void {
-    this.filter = filter;
+    patchState(this.localState, { filter });
 
-    if (!this.filter.from || !this.filter.to) {
+    if (!this.localState.filter.from() || !this.localState.filter.to()) {
       return;
     }
 
-    this.ticketFeature.search(this.filter.from, this.filter.to);
+    this.ticketFeature.search(
+      this.localState.filter.from(),
+      this.localState.filter.to()
+    );
   }
 
   delay(): void {
-    const oldFlight = this.flights()[0];
+    const oldFlight = this.ticketFeature.flights()[0];
     const oldDate = new Date(oldFlight.date);
 
     const newDate = new Date(oldDate.getTime() + 1000 * 60 * 5); // Add 5 min
@@ -63,5 +84,14 @@ export class FlightSearchComponent {
 
   clear(): void {
     this.store.dispatch(ticketActions.flightsClear());
+  }
+
+  select(id: number, selected: boolean): void {
+    patchState(this.localState, state => ({
+      basket: {
+        ...state.basket,
+        [id]: selected
+      }
+    }));
   }
 }

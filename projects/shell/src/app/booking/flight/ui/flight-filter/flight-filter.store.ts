@@ -3,6 +3,7 @@ import {
   patchState,
   signalStore,
   withComputed,
+  withHooks,
   withMethods,
   withState
 } from '@ngrx/signals';
@@ -66,5 +67,13 @@ export const FlightFilterStore = signalStore(
         pipe(tap((filter) => updateSelectedFilter(filter)))
       )
     })
-  )
+  ),
+  withHooks({
+    onInit: (store) => {
+      console.log('Flight Filter Signal Store INIT')
+    },
+    onDestroy: (store) => {
+      console.log('Flight Filter Signal Store DESTROY')
+    }
+  })
 );

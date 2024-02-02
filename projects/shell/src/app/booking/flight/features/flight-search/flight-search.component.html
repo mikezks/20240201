@@ -1,5 +1,4 @@
 @if (ticketFeature.flights(); as flights) {
-
   <div class="card">
     <div class="card-header">
       <h2 class="card-title">Flight Search</h2>
@@ -8,9 +7,15 @@
     <div class="card-body">
 
       <app-flight-filter
-        [filter]="filter"
+        [filter]="localState.filter()"
         (searchTrigger)="search($event)"
-      />
+      >
+        @if (localState.flights().length) {
+          <div class="flight-filter-info">
+            {{ localState.flights().length }} flights found!
+          </div>
+        }
+      </app-flight-filter>
 
     </div>
   </div>
@@ -18,7 +23,11 @@
   <div class="row">
     @for (flight of flights; track flight.id) {
       <div class="col-xs-12 col-sm-6 col-md-4">
-        <app-flight-card [item]="flight" [(selected)]="basket[flight.id]" />
+        <app-flight-card
+          [item]="flight"
+          [selected]="localState.basket()[flight.id]"
+          (selectedChange)="select(flight.id, $event)"
+        />
       </div>
     }
   </div>
@@ -29,7 +38,7 @@
     </div>
 
     <div class="card-body">
-      <pre>{{ basket | json }}</pre>
+      <pre>{{ localState.basket() | json }}</pre>
     </div>
   </div>
 }
