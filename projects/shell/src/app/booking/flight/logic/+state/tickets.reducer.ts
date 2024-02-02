@@ -1,24 +1,8 @@
-import { filter } from 'rxjs';
 import { createFeature, createReducer, createSelector, on } from "@ngrx/store";
-import { Flight, initialFlight } from "../model/flight";
-import { ticketActions } from "./tickets.actions";
 import { routerFeature } from "../../../../shared/+state/router.feature";
-import { constants } from "os";
-
-
-export interface TicketState {
-  flights: Flight[];
-  basket: unknown;
-  tickets: unknown;
-  hide: number[];
-}
-
-export const initialTicketState: TicketState = {
-  flights: [],
-  basket: {},
-  tickets: {},
-  hide: [3, 5]
-};
+import { initialFlight } from "../model/flight";
+import { ticketActions } from "./tickets.actions";
+import { initialTicketState } from './tickets.model';
 
 
 export const ticketFeature = createFeature({

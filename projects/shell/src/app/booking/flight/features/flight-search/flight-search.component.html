@@ -1,4 +1,3 @@
-@if (ticketFeature.flights(); as flights) {
   <div class="card">
     <div class="card-header">
       <h2 class="card-title">Flight Search</h2>
@@ -21,7 +20,7 @@
   </div>
 
   <div class="row">
-    @for (flight of flights; track flight.id) {
+    @for (flight of localState.flights(); track flight.id) {
       <div class="col-xs-12 col-sm-6 col-md-4">
         <app-flight-card
           [item]="flight"
@@ -41,4 +40,3 @@
       <pre>{{ localState.basket() | json }}</pre>
     </div>
   </div>
-}
